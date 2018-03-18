@@ -1,10 +1,12 @@
 {
-  "name": "react-express-boilerplate",
+  "name": "potluck-planner",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
     "axios": "^0.18.0",
+    "body-parser": "^1.18.2",
     "express": "^4.16.2",
+    "mongoose": "^5.0.9",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-scripts": "1.1.1"
@@ -19,6 +21,7 @@
     "start": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\" "
   },
   "devDependencies": {
-    "concurrently": "^3.5.1"
+    "concurrently": "^3.5.1",
+    "react-router-dom": "^4.2.2"
   }
 }

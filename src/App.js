@@ -1,33 +1,90 @@
+// External Dependencies
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 import axios from 'axios';
 
-class App extends Component {
+// Internal Dependencies
+import Home from './components/Home';
+import Login from './components/Login';
+import CreateEvent from './components/CreateEvent';
+import SingleEvent from './components/SingleEvent';
 
-	// This will error because React thinks it's on a different port (3000)
-	// CORS error: Cross Origin Resource opens up potential vulnerabilities
-	componentDidMount() {
-		axios
-		.get('/hello')
-		.then((res) => {
-			console.log(res.data);
-		});
+// loggedIn: bool, /* will be a React thing (stateful)*/
+/* 
+React:
+- Login
+- Logout
+- Sign-up
+- HandleChange
+- Refresh
+*/
+
+/* 
+Database:
+- Add User
+- Find User
+- Create Event
+- Get list of events
+- Get list of users
+- Find Event 
+- List event admins
+- List event guests
+- List categories
+- List suggestions/contributions under appropriate categories
+- Add user from suggested contribution
+- Remove user from suggested contribution (return to suggested contribution)
+- Add user contribution
+- Edit user contribution
+- Remove user contribution (delete entirely)
+*/
+
+class App extends Component {
+	state = {
+		events: []
 	}
 
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-      </div>
-    );
-  }
+	refresh = () => {
+		// 1. Get all events from database
+		axios
+			.get('/events')
+			.then(res => {
+				if ( res.data.payload ) {
+					this.setState({events: res.data.payload});
+				}
+			})
+			.catch( err => {
+				console.log(err.message);
+			})
+	}
+
+	componentDidMount() {
+		this.refresh();
+	}
+
+	render(){
+		return (
+			<Router>
+				<div>
+					<Route 
+						exact path='/'
+						render={ (props) => <Home {...props} events={this.state.events} refresh={this.refresh}/>}
+					/>
+					<Route 
+						path='/login'
+						component={Login}
+					/>
+					<Route 
+						path='/create-event'
+						render={ (props) => <CreateEvent {...props} />}
+					/>
+					<Route 
+						path='/event/:event'
+						render={ (props) => <SingleEvent {...props} events={this.state.events}/>}
+					/>
+				</div>
+			</Router>
+		)
+	}
 }
 
 export default App;
