@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const ListEvents = ({ events }) => {
     return (
@@ -8,11 +9,13 @@ const ListEvents = ({ events }) => {
 	        {events.map(event => {
 	        	return (
 	        			<li key={ event._id }>
-	        				<h4>{event.title}</h4>
-	        				<p>{event.date}</p>
-	        				<p>{event.address}</p>
-	        				<p>{event.description}</p>
-	        				<img src={event.image} alt={event.title} />
+		        			<Link to={`/event/${event._id}`}>
+		        				<h4>{event.title}</h4>
+		        				<p>{event.date}</p>
+		        				<p>{event.address}</p>
+		        				<p>{event.description}</p>
+		        				<img src={event.image} alt={event.title} />
+	        				</Link>
 	        			</li>
 	        		)
 	        })}

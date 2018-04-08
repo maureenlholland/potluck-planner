@@ -7,11 +7,11 @@ import ListEvents from './ListEvents';
 const Home = (props) => {
     return (
         <div>
-        	<Header />
+        	<Header setUser={props.setUser} path={props.location.pathname} />
         	<main>
         		<h2>Home</h2>
         		<Link to='/create-event'>Create Event</Link>
-        		{ /* if events exist, show event list, else "No Events - why not create one?"*/}
+                { props.events.length === 0 ? 'No events' : '' }
         		<ListEvents events={props.events} refresh={props.refresh}/>
         	</main>
         </div>

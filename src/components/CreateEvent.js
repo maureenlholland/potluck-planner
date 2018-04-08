@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Redirect } from "react-router-dom";
 import axios from 'axios';
 
 import Header from './Header';
@@ -11,6 +12,7 @@ Use state in this component only for now
 
 class CreateEvent extends Component {
 	state = {
+		eventSubmitted: '',
 		title: '',
 		date: '',
 		time: '',
@@ -18,7 +20,8 @@ class CreateEvent extends Component {
 		image: '',
 		description: '',
 		categories: [],
-		category: ''
+		category: '',
+		suggestion: ''
 	}
 	// For all inputs and textareas
 	handleChange = (e) => {
@@ -32,22 +35,59 @@ class CreateEvent extends Component {
 	  		[e.target.name]: '' 
 	  });
 	}
-	// Remove item
-	removeItem = (index) => {
-	  const removeTodo = Array.from(this.state.categories);
-	  removeTodo.splice(index,1);
-	  this.setState({ categories: removeTodo })
+	// Remove category
+	removeCategory = (index) => {
+	  const removeCategory = Array.from(this.state.categories);
+	  removeCategory.splice(index,1);
+	  this.setState({ categories: removeCategory })
+	}
+	// Clear category input
+	clearCategory = () => {
+		this.setState({category: ''});
 	}
 	// Add a category
+	// note that clearInput won't work here because the event is on the button and not the input
 	addCategory = (e) => {
-		console.log(e);
 		const newCategories = Array.from(this.state.categories);
-		newCategories.push(this.state.category);
+		newCategories.push({
+			name: this.state.category,
+			suggestions: []
+		});
 		this.setState({ categories: newCategories });
-		this.clearInput(e);
+		this.clearCategory();
+	}
+	// Remove category
+	removeSuggestion = (suggestion, index) => {
+		// Copy  categories array
+		const newCategories = Array.from(this.state.categories);
+		// Find category with suggestion to remove
+		const targetCategory = newCategories[suggestion.category];
+		// Copy suggestions array within that category
+		const newSuggestions = targetCategory.suggestions;
+		// Remove suggestion
+		newSuggestions.splice(index, 1);
+		// Re-render with removed suggestion
+		this.setState({ categories: newCategories });
+	}
+	// Clear suggestion input
+	clearSuggestion = () => {
+		this.setState({suggestion: ''});
 	}
 	// Add a suggestion
-	// addSuggestions()
+	addSuggestion = (e, index) => {
+		// Add within categories array
+		const newCategories = Array.from(this.state.categories);
+		const newCategory = newCategories[index];
+		const newSuggestions = newCategory.suggestions;
+		const suggestion = {
+			name: this.state.suggestion,
+			category: index
+		};
+		newSuggestions.push(suggestion);
+		newCategories.splice(index, 1, newCategory);
+		this.setState({ categories: newCategories });
+		this.clearSuggestion();
+	}
 	// Add a guest
 	// Submit Event
 	handleSubmit = (e) => {
@@ -58,20 +98,29 @@ class CreateEvent extends Component {
 		const address = this.state.address;
 		const image = this.state.image;
 		const description = this.state.description;
+		const categories = this.state.categories;
 		axios
 			.post('/events', {
 				title: title,
 				date: new Date(dateString + ' ' + timeString),
 				address: address,
 				image: image,
-				description: description
+				description: description,
+				categories: categories
 			})
-			// .then(this.props.refresh) - Send to single event page!
+			.then((res)=>{
+				const eventId = res.data.payload._id;
+				this.setState({eventSubmitted: eventId});
+			})
 	}
 	render() {
+		// https://tylermcginnis.com/react-router-programmatically-navigate/
+		if (this.state.eventSubmitted) {
+		      return <Redirect to={`/event/${this.state.eventSubmitted}`} />
+		    }
 	    return (
 	        <div>
-	        	<Header />
+	        	<Header setUser={this.props.setUser} />
 	        	<main>
 	        		<h2>Create Event</h2>
 	        		<form onSubmit={this.handleSubmit}>
@@ -131,7 +180,6 @@ class CreateEvent extends Component {
 		        						onChange={this.handleChange}
 		        						id="pl-category" 
 		        						name="category" 
-		        						placeholder="Category One"
 		        						value={this.state.category}></input>
 		        						<button 
 		        							type="button" 
@@ -140,20 +188,44 @@ class CreateEvent extends Component {
 		        				</label>
 		        				<ul>
 		        					{this.state.categories.map( (category, index) => { 
+		        						console.log(category);
 		        						return (
 		        								<li key={`category-${index}`}>
-		        								{category}
-		        									<button
-		        										type="button">
-		        										Add Suggestion</button>
+		        								{category.name}
 		        									<button
 		        										type="button"
-		        										onClick={ () => this.removeItem(index) }>
+		        										onClick={ () => this.removeCategory(index) }>
 		        										Remove</button>
+		        									<input
+		        										onChange={this.handleChange}
+		        										id="pl-suggestion"
+		        										name="suggestion"
+		        										placeholder="Add suggestion"
+		        										value={this.state.suggestion}
+		        									></input>
+		        									<button
+		        										type="button"
+		        										onClick={(e) => this.addSuggestion(e, index)}>
+		        										Add Suggestion</button>
+		        								{/* separate out these maps into functions and use functions as first-class citizens  */}
+													<ul>
+			        									{category.suggestions.map( (suggestion, index) => {
+			        										console.log(suggestion);
+			        										return (
+			        												<li key={`suggestion-${index}`}>
+			        													{suggestion.name}
+			        													<button
+			        														type="button"
+			        														onClick={ () => this.removeSuggestion(suggestion, index) }>
+			        														Remove</button>
+			        												</li>
+			        											)
+			        									} )}
+			        								</ul>
 		        								</li>
+		        								
 		        							)
 		        					})}
-		        				{/* add input if suggestion pressed */}
 		        				</ul>
 	        				</div>
 	        			</fieldset>
