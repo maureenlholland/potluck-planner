@@ -14,17 +14,18 @@
     "react-dom": "^16.2.0",
     "react-scripts": "1.1.1"
   },
-  "proxy": "http://localhost:8080",
   "scripts": {
     "client": "react-scripts start",
     "build": "concurrently \"npm run server\" \"react-scripts build\"",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "server": "nodemon lib/server.js --ignore src/",
+    "server": "nodemon lib/server.js",
     "start": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\""
   },
+  "proxy": "http://localhost:8080",
   "devDependencies": {
     "concurrently": "^3.5.1",
+    "nodemon": "^1.17.3",
     "react-router-dom": "^4.2.2"
   }
 }
