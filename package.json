@@ -6,6 +6,7 @@
     "axios": "^0.18.0",
     "bcrypt": "^1.0.3",
     "body-parser": "^1.18.2",
+    "config": "^1.30.0",
     "express": "^4.16.2",
     "jsonwebtoken": "^8.2.0",
     "mongoose": "^5.0.9",
@@ -16,11 +17,11 @@
   "proxy": "http://localhost:8080",
   "scripts": {
     "client": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "concurrently \"npm run server\" \"react-scripts build\"",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "server": "nodemon lib/server.js --ignore src/",
-    "start": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\" "
+    "start": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\""
   },
   "devDependencies": {
     "concurrently": "^3.5.1",

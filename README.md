@@ -8,3 +8,4 @@ Troubleshooting:
 - `{ BrowserRouter as Router, Link }` means you are importing BrowserRouter but calling it with `Router` . You are *also* importing link but calling it as `Link`. `{ BrowserRouter as Link }` is going to import BrowserRouter again when you use `Link` and you will get the "too many children" error. Just use `{ Link }`. 
 - A router may only have one child element, so if you have more than one Route, you need to encase them all in a div
 - Do not forget `this.` when you are using props! `props.function` will not work. You need `this.props.function`.
+- node process already running? `killall node`
