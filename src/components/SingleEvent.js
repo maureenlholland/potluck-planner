@@ -12,17 +12,18 @@ class SingleEvent extends Component {
      refresh = () => {
         // 1. Get all events from database
         // Naming conventions - should axios url match router url? 
-        axios
-        // not that you don't need /event because .match automatically populates it
-            .get(`${this.props.match.params.event}`)
-            .then(res => {
-                if ( res.data.payload ) {
-                    this.setState({event: res.data.payload});
-                }
-            })
-            .catch( err => {
-                console.log(err.message);
-            })
+        console.log(`/event/${this.props.match.params.eventId}`);
+        // axios
+        // // not that you don't need /event because .match automatically populates it
+        //     .get(`/event/${this.props.match.params.event}`)
+        //     .then(res => {
+        //         if ( res.data.payload ) {
+        //             this.setState({event: res.data.payload});
+        //         }
+        //     })
+        //     .catch( err => {
+        //         console.log(err.message);
+        //     })
      }
      componentDidMount () {
        this.refresh();
@@ -57,7 +58,7 @@ class SingleEvent extends Component {
      	console.log(category);
      	// Axios request to create Contribution (POST)
      	axios
-     		.post('/contributions', {
+     		.post('/contribution/create', {
 				name: contribution,
 				user: '5aa53b2d26745856bfaab7c9'
 			})

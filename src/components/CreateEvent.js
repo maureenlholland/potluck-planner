@@ -99,18 +99,25 @@ class CreateEvent extends Component {
 		const image = this.state.image;
 		const description = this.state.description;
 		const categories = this.state.categories;
+		const admin = this.props.user._id;
+		const creator = this.props.user._id;
+
 		axios
-			.post('/events', {
+			.post('/event/create', {
 				title: title,
 				date: new Date(dateString + ' ' + timeString),
 				address: address,
 				image: image,
 				description: description,
-				categories: categories
+				categories: categories,
+				admin: admin,
+				creator: creator
 			})
 			.then((res)=>{
 				const eventId = res.data.payload._id;
-				this.setState({eventSubmitted: eventId});
+				this.setState({
+					eventSubmitted: eventId
+				}, this.props.refresh);
 			})
 	}
 	render() {

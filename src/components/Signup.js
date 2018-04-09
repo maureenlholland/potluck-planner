@@ -17,7 +17,7 @@ class Signup extends Component {
 		e.preventDefault();
 		const { firstName, lastName, email, password } = this.state;
 		axios
-			.post('/signup', {
+			.post('/auth/signup', {
 				firstName,
 				lastName,
 				email, 

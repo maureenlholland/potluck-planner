@@ -11,35 +11,6 @@ import CreateEvent from './components/CreateEvent';
 import SingleEvent from './components/SingleEvent';
 import { getToken } from './services/tokenService';
 
-// loggedIn: bool, /* will be a React thing (stateful)*/
-/* 
-React:
-- Login
-- Logout
-- Sign-up
-- HandleChange
-- Refresh
-*/
-
-/* 
-Database:
-- Add User
-- Find User
-- Create Event
-- Get list of events
-- Get list of users
-- Find Event 
-- List event admins
-- List event guests
-- List categories
-- List suggestions/contributions under appropriate categories
-- Add user from suggested contribution
-- Remove user from suggested contribution (return to suggested contribution)
-- Add user contribution
-- Edit user contribution
-- Remove user contribution (delete entirely)
-*/
-
 class App extends Component {
 	state = {
 		events: [], 
@@ -54,22 +25,33 @@ class App extends Component {
 		const token = getToken();
 		if (token) {
 			axios
-				.get('user/current', {
+				.get('/user/current', {
 					headers: {
 						Authorization: `Bearer ${token}`
 					}
 				})
 				.then(res => {
 					const user = res.data.payload;
-					this.setState({ user });
+					this.setState({ 
+						user 
+					}, () => {
+						this.refresh();
+					});
 				})
 		}
 	}
 
 	refresh = () => {
+		const token = getToken();
+
+		const userId = this.state.user && this.state.user._id;
 		// 1. Get all events from database
 		axios
-			.get('/events')
+			.get(`/event/${userId}`, {
+				headers: {
+					Authorization: `Bearer ${token}`
+				}
+			})
 			.then(res => {
 				if ( res.data.payload ) {
 					this.setState({events: res.data.payload});
@@ -82,7 +64,6 @@ class App extends Component {
 
 	componentDidMount() {
 		this.getCurrentUser();
-		this.refresh();
 	}
 
 	render(){
@@ -115,7 +96,8 @@ class App extends Component {
 								<Home {...props} 
 									events={this.state.events} 
 									refresh={this.refresh}
-									setUser={this.setUser}/>
+									setUser={this.setUser}
+									user={this.state.user}/>
 								:
 								<Redirect to='/login'/>
 							}
@@ -124,21 +106,23 @@ class App extends Component {
 							path='/create-event'
 							render={ (props) => 
 								this.state.user ?
-								<CreateEvent 
+								<CreateEvent
 									setUser={this.setUser}
 									refresh={this.refresh}
+									user={this.state.user}
 								/>
 								:
 								<Redirect to='/login'/>
 							}
 						/>
 						<Route 
-							path='/event/:event'
+							path='/event/:eventId'
 							render={ (props) => 
 								this.state.user ?
 								<SingleEvent 
 									{...props} 
 									setUser={this.setUser}
+									user={this.state.user}
 								/>
 								:
 								<Redirect to='/login'/>

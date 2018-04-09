@@ -15,7 +15,7 @@ class Login extends Component {
 		e.preventDefault();
 		const { email, password } = this.state;
 		axios
-			.post('/login', {
+			.post('/auth/login', {
 				email,
 				password
 			})
