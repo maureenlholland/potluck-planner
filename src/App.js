@@ -12,8 +12,7 @@ import SingleEvent from './components/SingleEvent';
 import { getToken } from './services/tokenService';
 
 class App extends Component {
-	state = {
-		events: [], 
+	state = { 
 		user: null
 	}
 
@@ -32,38 +31,18 @@ class App extends Component {
 				})
 				.then(res => {
 					const user = res.data.payload;
-					this.setState({ 
-						user 
-					}, () => {
-						this.refresh();
-					});
+					console.log('User ' + user);
+					this.setState({ user });
 				})
 		}
 	}
 
 	refresh = () => {
-		const token = getToken();
-
-		const userId = this.state.user && this.state.user._id;
-		// 1. Get all events from database
-		axios
-			.get(`/event/${userId}`, {
-				headers: {
-					Authorization: `Bearer ${token}`
-				}
-			})
-			.then(res => {
-				if ( res.data.payload ) {
-					this.setState({events: res.data.payload});
-				}
-			})
-			.catch( err => {
-				console.log(err.message);
-			})
+		this.getCurrentUser();
 	}
 
 	componentDidMount() {
-		this.getCurrentUser();
+		this.refresh();
 	}
 
 	render(){
@@ -94,7 +73,6 @@ class App extends Component {
 							render={ (props) => 
 								this.state.user ?
 								<Home {...props} 
-									events={this.state.events} 
 									refresh={this.refresh}
 									setUser={this.setUser}
 									user={this.state.user}/>
@@ -108,7 +86,6 @@ class App extends Component {
 								this.state.user ?
 								<CreateEvent
 									setUser={this.setUser}
-									refresh={this.refresh}
 									user={this.state.user}
 								/>
 								:
@@ -116,7 +93,7 @@ class App extends Component {
 							}
 						/>
 						<Route 
-							path='/event/:eventId'
+							path='/event/:id'
 							render={ (props) => 
 								this.state.user ?
 								<SingleEvent 

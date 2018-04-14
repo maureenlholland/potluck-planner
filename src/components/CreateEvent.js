@@ -5,11 +5,6 @@ import axios from 'axios';
 import Header from './Header';
 import '../App.css';
 
-/*
-Create simplest version of an event, save to database
-Use state in this component only for now
-*/
-
 class CreateEvent extends Component {
 	state = {
 		eventSubmitted: '',
@@ -21,7 +16,10 @@ class CreateEvent extends Component {
 		description: '',
 		categories: [],
 		category: '',
-		suggestion: ''
+		suggestion: '',
+		guests: [],
+		guest: '',
+		guestError: false
 	}
 	// For all inputs and textareas
 	handleChange = (e) => {
@@ -56,7 +54,7 @@ class CreateEvent extends Component {
 		this.setState({ categories: newCategories });
 		this.clearCategory();
 	}
-	// Remove category
+	// Remove suggestion
 	removeSuggestion = (suggestion, index) => {
 		// Copy  categories array
 		const newCategories = Array.from(this.state.categories);
@@ -88,10 +86,43 @@ class CreateEvent extends Component {
 		this.setState({ categories: newCategories });
 		this.clearSuggestion();
 	}
+	// Clear guest input
+	clearGuest = () => {
+		this.setState({guest: ''});
+	}
 	// Add a guest
+	addGuest = (e) => {
+		const email = this.state.guest;
+		// probably a better way to do this
+		// Error handle for no user match
+		axios 
+			.get(`/user/${email}`)
+			.then( res => {
+				const user = res.data.payload;
+				if ( user ) {
+					const newGuests = Array.from(this.state.guests);
+					newGuests.push(user);
+					this.setState({ guests: newGuests });
+					this.setState({ guestError: false });
+					this.clearGuest();
+				} else {
+					this.setState({ guestError: true });
+				}
+			})
+			.catch( err => {
+				console.log(err);
+			});
+	}
+	// Remove a guest
+	removeGuest = (index) => {
+	  const removeGuest = Array.from(this.state.guests);
+	  removeGuest.splice(index,1);
+	  this.setState({ guests: removeGuest });
+	}
 	// Submit Event
 	handleSubmit = (e) => {
 		e.preventDefault();
+		// Validation, if empty, don't include?
 		const title = this.state.title;
 		const dateString = this.state.date;
 		const timeString = this.state.time;
@@ -99,9 +130,8 @@ class CreateEvent extends Component {
 		const image = this.state.image;
 		const description = this.state.description;
 		const categories = this.state.categories;
-		const admin = this.props.user._id;
-		const creator = this.props.user._id;
-
+		const admin = [this.props.user];
+		const guests = this.state.guests;
 		axios
 			.post('/event/create', {
 				title: title,
@@ -110,14 +140,16 @@ class CreateEvent extends Component {
 				image: image,
 				description: description,
 				categories: categories,
-				admin: admin,
-				creator: creator
+				admins: admin,
+				guests: guests
 			})
 			.then((res)=>{
 				const eventId = res.data.payload._id;
-				this.setState({
-					eventSubmitted: eventId
-				}, this.props.refresh);
+				this.setState({eventSubmitted: eventId});
+				// I need some way to get the user stored in app.js state to update
+			})
+			.catch(err => {
+				console.log(err);
 			})
 	}
 	render() {
@@ -195,7 +227,6 @@ class CreateEvent extends Component {
 		        				</label>
 		        				<ul>
 		        					{this.state.categories.map( (category, index) => { 
-		        						console.log(category);
 		        						return (
 		        								<li key={`category-${index}`}>
 		        								{category.name}
@@ -217,7 +248,6 @@ class CreateEvent extends Component {
 		        								{/* separate out these maps into functions and use functions as first-class citizens  */}
 													<ul>
 			        									{category.suggestions.map( (suggestion, index) => {
-			        										console.log(suggestion);
 			        										return (
 			        												<li key={`suggestion-${index}`}>
 			        													{suggestion.name}
@@ -239,24 +269,36 @@ class CreateEvent extends Component {
 	        			<fieldset>
 	        				<legend>Guest List</legend>
 	        				<div>
-	        					<label htmlFor="pl-attendees">Email
+	        					<label htmlFor="pl-guest">Email
 	        						<input
-	        							id="pl-attendees"
-	        							name="attendees"
-	        							type="email"></input>
-	        					</label>	
+	        							onChange={this.handleChange}
+	        							id="pl-guest"
+	        							name="guest"
+	        							type="email"
+	        							placeholder="guest@email.com"
+	        							value={this.state.guest ? this.state.guest : ''}></input>
+	        					</label>
+	        					{ this.state.guestError && 
+	        						<p>Sorry, we do not have a user registered with that email. Please try again.</p>
+	        					}	
 	        					<button 
-	        						type="button">
+	        						type="button"
+	        						onClick={this.addGuest}>
 	        						Add to list</button>
 	        				</div>
 	        				<ul>
-	        					{/* map over categories */}
-	        					<li>
-	        					Guest Name 
-	        						<button
-	        							type="button">
-	        							Remove</button>
-	        					</li>
+	        					{this.state.guests.map( (guest, index) => { 
+        							return (
+        									<li key={`guest-${index}`}>
+        									{guest.email} 
+        										<button
+        											type="button"
+        											onClick={ () => this.removeGuest(index) }>
+        											Remove</button>
+        									</li>
+        								)
+	        					} ) }
+	     
 	        				</ul>	
 	        			</fieldset>
 	 					<input 

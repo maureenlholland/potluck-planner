@@ -10,20 +10,18 @@ class SingleEvent extends Component {
        contribution: ''
      }
      refresh = () => {
-        // 1. Get all events from database
-        // Naming conventions - should axios url match router url? 
-        console.log(`/event/${this.props.match.params.eventId}`);
-        // axios
-        // // not that you don't need /event because .match automatically populates it
-        //     .get(`/event/${this.props.match.params.event}`)
-        //     .then(res => {
-        //         if ( res.data.payload ) {
-        //             this.setState({event: res.data.payload});
-        //         }
-        //     })
-        //     .catch( err => {
-        //         console.log(err.message);
-        //     })
+        // 1. Get single event from database
+        axios
+            .get(`${this.props.match.params.id}`)
+            .then(res => {
+            	console.log(res);
+                if ( res.data.payload ) {
+                    this.setState({event: res.data.payload});
+                }
+            })
+            .catch( err => {
+                console.log(err.message);
+            })
      }
      componentDidMount () {
        this.refresh();
@@ -37,12 +35,28 @@ class SingleEvent extends Component {
      // Remove claim to suggestion
      // Claim Suggestion
      // Remove Contribution
-     removeContribution = (suggestion, index) => {
-
+     removeContribution = (contributionObj) => {
+     	console.log(contributionObj);
+        const contribution = contributionObj._id; 
+        const category = contributionObj.categoryId; 
+        const event = this.state.event._id;
+        // delete contribution
+        // 404 error means no match between axios route and express route (in lib/routes)
+        axios
+     		.delete(`/contribution/${contribution}/${category}/${event}`)
+            .then(doc => {
+                console.log(doc);
+            })
+            .catch(err => {
+                console.log(err);
+            })
+        // update event 
+        this.refresh();
      } 
      // Add input for Contribution addition to the proper category
-     addInput= (e, id) => {
-     	this.setState({ category: id });
+     addInput= (e, category) => {
+     	console.log(category);
+     	this.setState({ category: category });
      }
      // Clear Contribution & Category
      clearContribution = () => {
@@ -53,31 +67,28 @@ class SingleEvent extends Component {
     handleSubmit = (e) => {
      	e.preventDefault();
      	// find index of category for this contribution
-     	const category = this.state.event.categories.findIndex(category => category._id === this.state.category);
+     	const category = this.state.category;
      	const contribution = this.state.contribution;
-     	console.log(category);
      	// Axios request to create Contribution (POST)
      	axios
      		.post('/contribution/create', {
 				name: contribution,
-				user: '5aa53b2d26745856bfaab7c9'
+				user: this.props.user,
+				eventId: this.state.event._id,
+				category: category
 			})
 			.then(doc => {
 				console.log(doc);
-				// Axios request to add contribution to event (PUT) **This feels like a problem waiting to happen**
-				axios
-					.put(`${this.props.match.params.event}`, {
-						contribution: doc.data.payload._id,
-						category: category
-					})
-					.then(doc => {
-						console.log(doc);
-					})
-			});
+				
+			})
+            .catch(err => {
+                console.log(err);
+            })
 
      	// Clear input field
      	this.clearContribution();
-
+        // update event
+        this.refresh();
      }
      
     render(){
@@ -91,7 +102,7 @@ class SingleEvent extends Component {
                         {event.description}
                     </div>
                     <div className="event__image">
-                        <img src={event.image} alt={event.title}/>
+                        <img src={ event.image} alt={event.title}/>
                     </div>
                     <div className="event__menu">
                     {/*https://reactjs.org/docs/conditional-rendering.html*/}
@@ -103,7 +114,7 @@ class SingleEvent extends Component {
                                             {category.name}
                                             <button
                                             	type="button"
-                                            	onClick={(e) => this.addInput(e, category._id)}
+                                            	onClick={(e) => this.addInput(e, category)}
                                             >Add Item</button>
                                                 <ul>
                                                     {category.suggestions.map( (suggestion, index) => {
@@ -124,12 +135,15 @@ class SingleEvent extends Component {
                                                 		return (
                                                 				<li key={`contribution-${index}`}>
                                                 				    {contribution.name}
-                                                				    <span>User: {contribution.userId}</span>
+                                                				    <span>User: {contribution.user.firstName} {contribution.user.lastName}</span>
+                                                                    { contribution.user._id === this.props.user._id &&
+                                                                        <button onClick={() => this.removeContribution(contribution)}>Remove</button>
+                                                                    }
                                                 				</li>
                                                 			)
                                                 	} )}
                                                 </ul>
-                                                { this.state.category === category._id &&
+                                                { this.state.category  &&
                                                 	<form onSubmit={this.handleSubmit}>
                                                 		<label htmlFor="pl-contribution">
                                                 			<input 
@@ -154,7 +168,23 @@ class SingleEvent extends Component {
                         
                     </div>
                     <div className="event__attendees">
-                        
+                        <h2>Guest List</h2>
+	                    <ul>
+		                    { event.admins &&
+	                           event.admins.map( (admin, index) => {
+	                               return (
+	                                     <li key={admin._id}>{admin.firstName} {admin.lastName}</li>     
+	                                   )
+	                           }) 
+		                    }
+		                    { event.guests &&
+	                           event.guests.map( (guest, index) => {
+	                               return (
+	                                     <li key={guest._id}>{guest.firstName} {guest.lastName}</li>     
+	                                   )
+	                           }) 
+		                    }
+	                    </ul>
                     </div>
                 </main>
             </div>
