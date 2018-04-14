@@ -1,17 +1,17 @@
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
-#Practice App: Using React-Express-MongoDB-Mongoose
+# Practice App: Using React-Express-MongoDB-Mongoose
 
-##Troubleshooting: 
+## Troubleshooting: 
 
-###Node
+### Node
 [Common errors](https://nodejs.org/api/errors.html#errors_common_system_errors)
 
-###Express
+### Express
 
-###React
+### React
 
-###Mongoose
+### Mongoose
 
 
 - to send info in the body of a request, install `body-parser` npm package and require/call it in server.js file
