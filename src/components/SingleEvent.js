@@ -14,7 +14,6 @@ class SingleEvent extends Component {
         axios
             .get(`${this.props.match.params.id}`)
             .then(res => {
-            	console.log(res);
                 if ( res.data.payload ) {
                     this.setState({event: res.data.payload});
                 }
@@ -32,14 +31,62 @@ class SingleEvent extends Component {
      		[e.target.name]: e.target.value
      	})
      }
-     // Remove claim to suggestion
+     removeClaim = (obj) => {
+        // when you claim a suggestion, you use the suggestion object, but when you remove a suggested claim, you use the contribution object
+        // Remove claim
+        axios 
+            .put('/event/suggestion/remove', {
+                event: this.state.event,
+                contribution: obj,
+                claimed: false 
+            })
+            .then(doc => {
+                console.log(doc);
+            })
+            .catch(err => {
+                console.log(err);
+            })
+     }
      // Claim Suggestion
+     claimSuggestion = (suggestionObj) => {
+        console.log('claim object: ' + suggestionObj);
+        const suggestionName = suggestionObj.name;
+        const suggestionIndex = suggestionObj.category;
+        const category = this.state.event.categories[suggestionObj.category];
+        const event = this.state.event;
+        const newContribution = {
+            category: category,
+            contribution: suggestionName,
+            suggestion: suggestionIndex
+        };
+        // Claim suggestion
+        axios 
+            .put('/event/suggestion/claim', {
+                event: event,
+                suggestion: suggestionObj,
+                claimed: true 
+            })
+            .then(doc => {
+                console.log(doc);
+            })
+            .catch(err => {
+                console.log(err);
+            })
+        // console.log(this.state.contribution);
+        this.addContribution(newContribution);
+     }
      // Remove Contribution
      removeContribution = (contributionObj) => {
-     	console.log(contributionObj);
+        
+        if (contributionObj.suggestionId !== '') {
+            this.removeClaim(contributionObj);
+        }
         const contribution = contributionObj._id; 
-        const category = contributionObj.categoryId; 
+        const category = contributionObj.category; 
         const event = this.state.event._id;
+        console.log(contribution);
+        console.log(category);
+        console.log(event);
         // delete contribution
         // 404 error means no match between axios route and express route (in lib/routes)
         axios
@@ -55,7 +102,6 @@ class SingleEvent extends Component {
      } 
      // Add input for Contribution addition to the proper category
      addInput= (e, category) => {
-     	console.log(category);
      	this.setState({ category: category });
      }
      // Clear Contribution & Category
@@ -66,27 +112,34 @@ class SingleEvent extends Component {
      // Add a contribution
     handleSubmit = (e) => {
      	e.preventDefault();
-     	// find index of category for this contribution
-     	const category = this.state.category;
-     	const contribution = this.state.contribution;
-     	// Axios request to create Contribution (POST)
-     	axios
-     		.post('/contribution/create', {
-				name: contribution,
-				user: this.props.user,
-				eventId: this.state.event._id,
-				category: category
-			})
-			.then(doc => {
-				console.log(doc);
-				
-			})
+        const newContribution = {
+            category: this.state.category,
+            contribution: this.state.contribution
+        };
+        this.addContribution(newContribution);
+     }
+
+     addContribution = (obj) => {
+        const category = obj.category;
+        const contribution = obj.contribution;
+        // Axios request to create Contribution (POST)
+         axios
+             .post('/contribution/create', {
+                 name: contribution,
+                 user: this.props.user,
+                 eventId: this.state.event._id,
+                 category: category
+            })
+            .then(doc => {
+             console.log(doc);
+                
+            })
             .catch(err => {
                 console.log(err);
             })
 
-     	// Clear input field
-     	this.clearContribution();
+        // Clear input field
+        this.clearContribution();
         // update event
         this.refresh();
      }
@@ -116,6 +169,24 @@ class SingleEvent extends Component {
                                             	type="button"
                                             	onClick={(e) => this.addInput(e, category)}
                                             >Add Item</button>
+                                            { this.state.category &&
+                                                <form onSubmit={this.handleSubmit}>
+                                                    <label htmlFor="pl-contribution">
+                                                        <input 
+                                                            onChange={this.handleChange}
+                                                            id="pl-contribution" 
+                                                            name="contribution" 
+                                                            value={this.state.contribution} />
+                                                    </label>
+                                                    <input 
+                                                        type="submit"
+                                                        value="Add contribution"
+                                                    />
+                                                </form>     
+                                             }
+                                             { category.suggestions.length > 0 &&
+                                                <h4>Here's what we need:</h4>
+                                             }
                                                 <ul>
                                                     {category.suggestions.map( (suggestion, index) => {
                                                     	if( suggestion.claimed ){
@@ -124,18 +195,21 @@ class SingleEvent extends Component {
                                                     		return (
                                                 					<li key={`suggestion-${index}`}>
                                                 					    {suggestion.name}
-                                                					    <button>Got it!</button>
+                                                					    <button onClick={() => this.claimSuggestion( suggestion)}>Got it!</button>
                                                 					</li> 
                                                     		    )
                                                     	}
                                                     } )}
                                                 </ul>
+                                                { category.contributions.length > 0 &&
+                                                   <h4>Here's what we have:</h4>
+                                                }
                                                 <ul>
                                                 	{category.contributions.map( (contribution, index) => {
                                                 		return (
                                                 				<li key={`contribution-${index}`}>
                                                 				    {contribution.name}
-                                                				    <span>User: {contribution.user.firstName} {contribution.user.lastName}</span>
+                                                				    <span>{contribution.user.firstName} {contribution.user.lastName}</span>
                                                                     { contribution.user._id === this.props.user._id &&
                                                                         <button onClick={() => this.removeContribution(contribution)}>Remove</button>
                                                                     }
@@ -143,22 +217,6 @@ class SingleEvent extends Component {
                                                 			)
                                                 	} )}
                                                 </ul>
-                                                { this.state.category  &&
-                                                	<form onSubmit={this.handleSubmit}>
-                                                		<label htmlFor="pl-contribution">
-                                                			<input 
-                                                				onChange={this.handleChange}
-                                                				id="pl-contribution" 
-                                                				name="contribution" 
-                                                				value={this.state.contribution} />
-                                                		</label>
-                                                		<input 
-                                                			type="submit"
-                                                			value="Add contribution"
-                                                		/>
-                                                	</form>
-                                                	
-                                                 }
                                             </li>
                                             
                                         )

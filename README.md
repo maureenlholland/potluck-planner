@@ -1,6 +1,6 @@
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
-# Practice App: Using React-Express-MongoDB-Mongoose
+# Practice App: Using React-Express-MongoDB
 
 ## Troubleshooting: 
 
@@ -13,15 +13,15 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 - if you are using `router` as well, be sure to call it **after** body-parser
 - `routes` folder needs `index.js` file
 - routers declared in `index.js` will prefix all routes within their respective files 
-	For example: 
-	Inside `routes/index.js` file: `router.use('/auth', require('./auth'));` 
-	Inside `routes/auth.js:` `/login`
-	Axios call: `/auth/login`
+	- For example: 
+	- Inside `routes/index.js` file: `router.use('/auth', require('./auth'));` 
+	- Inside `routes/auth.js:` `/login`
+	- Axios call: `/auth/login`
 
 ### React
-- `{ BrowserRouter as Router, Link }` means you are importing BrowserRouter but calling it with `Router` . You are *also* importing link but calling it as `Link`. `{ BrowserRouter as Link }` is going to import BrowserRouter again when you use `Link` and you will get the "too many children" error. Just use `{ Link }`. 
+- `{ BrowserRouter as Router, Link }` means you are importing BrowserRouter but calling it with `Router` . You are *also* importing link but calling it as `Link`. `{ BrowserRouter as Link }` is going to import BrowserRouter again when you use `Link` and you will get the "too many children" error. Just use what you need. 
 - A router may only have one child element, so if you have more than one Route, you need to encase them all in a div
-- Do not forget `this.` when you are using props! `props.function` will not work. You need `this.props.function`.
+- Do not forget `this.` When you are using props, `props.function` will not work. You need `this.props.function`.
 
 ### Mongoose
 
