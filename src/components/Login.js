@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
+
 import { setToken } from '../services/tokenService';
+import Welcome from './Welcome';
+import Footer from './Footer';
 
 class Login extends Component {
 	state: {
@@ -28,31 +32,41 @@ class Login extends Component {
 	}
 	render() {
 	    return (
-	        <div>
-	        	<main>
-	        		<h2>Login</h2>
-	        		<form onSubmit={this.handleSubmit}>
-		    			  <label htmlFor="email">Email: 
-			    			  <input
-			    			    type="email"
-			    			    onChange={this.handleChange}
-			    			    name="email"
-			    			    id="email"
-			    			    placeholder="bill@murray.com"
-			    			  />
-		    			  </label>
-		    			  <label htmlFor="password">Password:
-			    			  <input
-			    			    type="password"
-			    			    onChange={this.handleChange}
-			    			    name="password"
-			    			    id="password"
-			    			    placeholder="Enter password"
-			    			  />
-		    			  </label>
-		    			  <input type="submit" value="Login" />
-		    		</form>
+	        <div className="full-height">
+	        	<Welcome />
+	        	<main className="page--welcome">
+		        	<div className="no-login">
+		        		<div className="title">
+		        			<h2>Login</h2>
+		        			<p>Don't have an account? <Link to="/signup">Sign Up Here</Link></p>
+		        		</div>
+		        		<form className="form--center" onSubmit={this.handleSubmit}>
+			    			  <label className="required" htmlFor="email">Email: 
+				    			  <input
+				    			  	required
+				    			  	className="text"
+				    			    type="email"
+				    			    onChange={this.handleChange}
+				    			    name="email"
+				    			    id="email"
+				    			    placeholder="bill@murray.com"
+				    			  />
+			    			  </label>
+			    			  <label className="required" htmlFor="password">Password:
+				    			  <input
+				    			  	className="text"
+				    			    type="password"
+				    			    onChange={this.handleChange}
+				    			    name="password"
+				    			    id="password"
+				    			    placeholder="Enter password"
+				    			  />
+			    			  </label>
+			    			  <input type="submit" value="Login" />
+			    		</form>
+		    		</div>
 	        	</main>
+	        	<Footer/>
 	        </div>
 	    );
 	}

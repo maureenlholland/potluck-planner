@@ -3,6 +3,7 @@ import { Redirect } from "react-router-dom";
 import axios from 'axios';
 
 import Header from './Header';
+import Footer from './Footer';
 import '../App.css';
 
 class CreateEvent extends Component {
@@ -158,155 +159,178 @@ class CreateEvent extends Component {
 		      return <Redirect to={`/event/${this.state.eventSubmitted}`} />
 		    }
 	    return (
-	        <div>
+	        <div className="full-height">
 	        	<Header setUser={this.props.setUser} />
 	        	<main>
-	        		<h2>Create Event</h2>
-	        		<form onSubmit={this.handleSubmit}>
-	        			<label htmlFor="pl-title">
-	        			Title
-	        				<input 
-	        					onChange={this.handleChange}
-	        					id="pl-title"
-	        					name="title" 
-	        					type="text"
-	        					required></input>
-	        			</label>
-	        			<label htmlFor="pl-date">
-	        			Date
-	        				<input 
-	        					onChange={this.handleChange}
-	        					id="pl-date"
-	        					name="date"
-	        					type="date"></input>
-	        			</label>
-	        			<label htmlFor="pl-time">
-	        			Time
-	        				<input 
-	        					onChange={this.handleChange}
-	        					id="pl-time"
-	        					name="time"
-	        					type="time"></input>
-	        			</label>
-	        			<label htmlFor="pl-address">
-	        			Address
-	        				<input 
-	        					onChange={this.handleChange}
-	        					id="pl-address"
-	        					name="address"
-	        					type="text"></input>
-	        			</label>
-	        			<label htmlFor="pl-image">
-	        			Image URL
-	        				<input 
-	        					onChange={this.handleChange}
-	        					id="pl-image"
-	        					name="image"
-	        					type="url"></input>
-	        			</label>
-	        			<label htmlFor="pl-description">
-	        			Description
-	        				<textarea 
-	        					onChange={this.handleChange}
-	        					id="pl-description"
-	        					name="description"></textarea>
-	        			</label>
-	        			<fieldset>
-	        				<legend>Categories</legend>
-	        				<div>
-		        				<label htmlFor="pl-category">
-		        					<input 
-		        						onChange={this.handleChange}
-		        						id="pl-category" 
-		        						name="category" 
-		        						value={this.state.category}></input>
-		        						<button 
-		        							type="button" 
-		        							onClick={this.addCategory}>
-		        							Add Category</button>
-		        				</label>
-		        				<ul>
-		        					{this.state.categories.map( (category, index) => { 
-		        						return (
-		        								<li key={`category-${index}`}>
-		        								{category.name}
-		        									<button
-		        										type="button"
-		        										onClick={ () => this.removeCategory(index) }>
-		        										Remove</button>
-		        									<input
-		        										onChange={this.handleChange}
-		        										id="pl-suggestion"
-		        										name="suggestion"
-		        										placeholder="Add suggestion"
-		        										value={this.state.suggestion}
-		        									></input>
-		        									<button
-		        										type="button"
-		        										onClick={(e) => this.addSuggestion(e, index)}>
-		        										Add Suggestion</button>
-		        								{/* separate out these maps into functions and use functions as first-class citizens  */}
-													<ul>
-			        									{category.suggestions.map( (suggestion, index) => {
-			        										return (
-			        												<li key={`suggestion-${index}`}>
-			        													{suggestion.name}
-			        													<button
-			        														type="button"
-			        														onClick={ () => this.removeSuggestion(suggestion, index) }>
-			        														Remove</button>
-			        												</li>
-			        											)
-			        									} )}
-			        								</ul>
-		        								</li>
-		        								
-		        							)
-		        					})}
-		        				</ul>
-	        				</div>
-	        			</fieldset>
-	        			<fieldset>
-	        				<legend>Guest List</legend>
-	        				<div>
-	        					<label htmlFor="pl-guest">Email
-	        						<input
-	        							onChange={this.handleChange}
-	        							id="pl-guest"
-	        							name="guest"
-	        							type="email"
-	        							placeholder="guest@email.com"
-	        							value={this.state.guest ? this.state.guest : ''}></input>
-	        					</label>
-	        					{ this.state.guestError && 
-	        						<p>Sorry, we do not have a user registered with that email. Please try again.</p>
-	        					}	
-	        					<button 
-	        						type="button"
-	        						onClick={this.addGuest}>
-	        						Add to list</button>
-	        				</div>
-	        				<ul>
-	        					{this.state.guests.map( (guest, index) => { 
-        							return (
-        									<li key={`guest-${index}`}>
-        									{guest.email} 
-        										<button
-        											type="button"
-        											onClick={ () => this.removeGuest(index) }>
-        											Remove</button>
-        									</li>
-        								)
-	        					} ) }
-	     
-	        				</ul>	
-	        			</fieldset>
-	 					<input 
-	 						id="pl-publish"
-	 						type="submit"
-	 						value="Publish Event"></input>
-	        		</form>
+	        		<div className="center logged-in">
+	        			<h2><span className="thin">Create</span> <span className="bold">Event</span></h2>
+	        		</div>
+		        	<div className="wrapper wrapper--inner">
+		        		<form className="create-event" onSubmit={this.handleSubmit}>
+		        		<div className="fb-container">
+		        			<label className="required" htmlFor="pl-title">
+		        			Title
+		        				<input 
+		        					required
+		        				
+		        					onChange={this.handleChange}
+		        					id="pl-title"
+		        					name="title" 
+		        					type="text"></input>
+		        			</label>
+		        			<label className="required" htmlFor="pl-address">
+		        			Address
+		        				<input 
+		        					required
+		        				
+		        					onChange={this.handleChange}
+		        					id="pl-address"
+		        					name="address"
+		        					type="text"></input>
+		        			</label>
+		        		</div>
+		        		<div className="fb-container">
+		        			<label className="required" htmlFor="pl-date">
+		        			Date
+		        				<input 
+		        					required
+		        				
+		        					onChange={this.handleChange}
+		        					id="pl-date"
+		        					name="date"
+		        					type="date"></input>
+		        			</label>
+		        			<label className="required" htmlFor="pl-time">
+		        			Time
+		        				<input 
+		        					required
+		        				
+		        					onChange={this.handleChange}
+		        					id="pl-time"
+		        					name="time"
+		        					type="time"></input>
+		        			</label>
+		        		</div>
+		        			<label htmlFor="pl-image">
+		        			Image URL
+		        				<input 
+		        				
+		        					onChange={this.handleChange}
+		        					id="pl-image"
+		        					name="image"
+		        					type="url"></input>
+		        			</label>
+		        			<label htmlFor="pl-description">
+		        			Description
+		        				<textarea 
+		        					onChange={this.handleChange}
+		        					id="pl-description"
+		        					name="description"></textarea>
+		        			</label>
+		        			<fieldset>
+		        				<legend className="required">Categories</legend>
+		        				<div>
+			        				<label htmlFor="pl-category">
+			        					<input 
+			        						onChange={this.handleChange}
+			        						id="pl-category" 
+			        						name="category" 
+			        						placeholder="Anything you want!"
+			        						value={this.state.category}></input>
+			        				</label>
+			        				<button 
+			        					type="button" 
+			        					onClick={this.addCategory}>
+			        					Add Category</button>
+			        				<ul className="form-categories">
+			        					{this.state.categories.map( (category, index) => { 
+			        						return (
+			        								<li key={`category-${index}`}>
+				        								<span className="form-categories--single">
+				        								{category.name}
+				        									<button
+				        										type="button"
+				        										onClick={ () => this.removeCategory(index) }>
+				        										Remove</button>
+				        								</span>
+				        								<label htmlFor="pl-suggestion">
+				        									<input
+				        										onChange={this.handleChange}
+				        										id="pl-suggestion"
+				        										name="suggestion"
+				        										placeholder="Add suggestion"
+				        										value={this.state.suggestion}
+				        									></input>
+			        									</label>
+			        									<button
+			        										type="button"
+			        										onClick={(e) => this.addSuggestion(e, index)}>
+			        										Add Suggestion</button>
+			        								{/* separate out these maps into functions and use functions as first-class citizens  */}
+														<ul className="form-list--light">
+				        									{category.suggestions.map( (suggestion, index) => {
+				        										return (
+				        												<li key={`suggestion-${index}`}>
+				        													{suggestion.name}
+				        													<button
+				        														type="button"
+				        														onClick={ () => this.removeSuggestion(suggestion, index) }>
+				        														Remove</button>
+				        												</li>
+				        											)
+				        									} )}
+				        								</ul>
+			        								</li>
+			        								
+			        							)
+			        					})}
+			        				</ul>
+		        				</div>
+		        			</fieldset>
+		        			<fieldset>
+		        				<legend>Guest List</legend>
+		        				<div>
+		        					<label htmlFor="pl-guest">Email
+		        						<input
+		        						
+		        							onChange={this.handleChange}
+		        							id="pl-guest"
+		        							name="guest"
+		        							type="email"
+		        							placeholder="guest@email.com"
+		        							value={this.state.guest ? this.state.guest : ''}></input>
+		        					</label>
+		        					{ this.state.guestError && 
+		        						<p>Sorry, we do not have a user registered with that email. Please try again.</p>
+		        					}	
+		        					<button 
+		        						type="button"
+		        						onClick={this.addGuest}>
+		        						Add Guest</button>
+		        				</div>
+		        				<ul className="form-list--light">
+		        					{this.state.guests.map( (guest, index) => { 
+	        							return (
+	        									<li key={`guest-${index}`}>
+	        									{guest.email} 
+	        										<button
+	        											type="button"
+	        											onClick={ () => this.removeGuest(index) }>
+	        											Remove</button>
+	        									</li>
+	        								)
+		        					} ) }
+		     
+		        				</ul>	
+		        			</fieldset>
+		 					<input 
+		 						id="pl-publish"
+		 						type="submit"
+		 						value="Publish Event"></input>
+		        		</form>
+		        	</div>
 	        	</main>
+	        	<Footer/>
 	        </div>
 	    )
 	}

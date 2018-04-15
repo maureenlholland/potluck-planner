@@ -7,16 +7,15 @@ import Logout from './Logout';
 
 const Header = ({ path, setUser }) => {
     return (
-        <div>
-        	<header>
-        		<h1>Potluck Planner</h1>
-        		{/* What's the best way to do this? */}
-        		{ path !== "/" &&
-        			<Link to="/">Home</Link>
-        		}
-        		<Logout setUser={setUser} />
-        	</header>
-        </div>
+		<header className="header">
+	        <div className="wrapper">
+	            { path !== "/" &&
+	                <Link className="btn" to="/">Home</Link>
+	            }
+	    		<h1><span className="cursive">Potluck</span>Planner</h1>
+	    		<Logout setUser={setUser} />
+	        </div>
+		</header>
     );
 }
 

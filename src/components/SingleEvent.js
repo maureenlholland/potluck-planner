@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 
 import Header from './Header';
+import Footer from './Footer';
 
 class SingleEvent extends Component {
     state = {
@@ -147,104 +148,126 @@ class SingleEvent extends Component {
     render(){
         const event = this.state.event;
         return (
-            <div>
+            <div className="full-height">
                 <Header setUser={this.props.setUser} />
                 <main>
-                    <h2>{event.title}</h2>
-                    <div className="event__info">
-                        {event.description}
-                    </div>
-                    <div className="event__image">
-                        <img src={ event.image} alt={event.title}/>
-                    </div>
-                    <div className="event__menu">
-                    {/*https://reactjs.org/docs/conditional-rendering.html*/}
-                    { event.categories &&
-                            <ul>
-                                {event.categories.map( (category, index) => { 
-                                    return (
-                                            <li key={category._id} id={category._id}>
-                                            {category.name}
-                                            <button
-                                            	type="button"
-                                            	onClick={(e) => this.addInput(e, category)}
-                                            >Add Item</button>
-                                            { this.state.category &&
-                                                <form onSubmit={this.handleSubmit}>
-                                                    <label htmlFor="pl-contribution">
-                                                        <input 
-                                                            onChange={this.handleChange}
-                                                            id="pl-contribution" 
-                                                            name="contribution" 
-                                                            value={this.state.contribution} />
-                                                    </label>
-                                                    <input 
-                                                        type="submit"
-                                                        value="Add contribution"
-                                                    />
-                                                </form>     
-                                             }
-                                             { category.suggestions.length > 0 &&
-                                                <h4>Here's what we need:</h4>
-                                             }
-                                                <ul>
-                                                    {category.suggestions.map( (suggestion, index) => {
-                                                    	if( suggestion.claimed ){
-                                                    		return null;
-                                                    	} else {
-                                                    		return (
-                                                					<li key={`suggestion-${index}`}>
-                                                					    {suggestion.name}
-                                                					    <button onClick={() => this.claimSuggestion( suggestion)}>Got it!</button>
-                                                					</li> 
-                                                    		    )
-                                                    	}
-                                                    } )}
-                                                </ul>
-                                                { category.contributions.length > 0 &&
-                                                   <h4>Here's what we have:</h4>
-                                                }
-                                                <ul>
-                                                	{category.contributions.map( (contribution, index) => {
-                                                		return (
-                                                				<li key={`contribution-${index}`}>
-                                                				    {contribution.name}
-                                                				    <span>{contribution.user.firstName} {contribution.user.lastName}</span>
-                                                                    { contribution.user._id === this.props.user._id &&
-                                                                        <button onClick={() => this.removeContribution(contribution)}>Remove</button>
-                                                                    }
-                                                				</li>
-                                                			)
-                                                	} )}
-                                                </ul>
-                                            </li>
-                                            
-                                        )
-                                })}
-                            </ul>
-                        }
-                        
-                    </div>
-                    <div className="event__attendees">
-                        <h2>Guest List</h2>
-	                    <ul>
-		                    { event.admins &&
-	                           event.admins.map( (admin, index) => {
-	                               return (
-	                                     <li key={admin._id}>{admin.firstName} {admin.lastName}</li>     
-	                                   )
-	                           }) 
-		                    }
-		                    { event.guests &&
-	                           event.guests.map( (guest, index) => {
-	                               return (
-	                                     <li key={guest._id}>{guest.firstName} {guest.lastName}</li>     
-	                                   )
-	                           }) 
-		                    }
-	                    </ul>
+	                <div className="center logged-in">
+	                    <h2>{event.title}</h2>
+	                </div>
+	                 <div className="wrapper">
+		                 <div className="event-list__list-item">
+	        				<div className="list-item__date">
+	        					<span className="date--top bold">15</span>
+	        					<span className="date--bottom">Apr 2018</span>
+	        				</div>
+	        				<div className="list-item__text">
+		        				<h2>{event.title}</h2>
+		        				<p className="keyline">{event.date} &#8212; {event.address}</p>
+		        				<p>{event.description}</p>
+	        				</div>
+		                    <div className="list-item__image">
+	        					<img width="300" height="200" src={event.image} alt={event.title} />
+	        				</div>
+	        			</div>
+	        			<div className="fb-container single-event">
+		                    <div className="event__menu">
+		                    {/*https://reactjs.org/docs/conditional-rendering.html*/}
+		                    { event.categories &&
+		                            <ul>
+		                                {event.categories.map( (category, index) => { 
+		                                    return (
+		                                            <li key={category._id} id={category._id}>
+		                                            <h3>{category.name}
+			                                            <button
+			                                            	type="button"
+			                                            	onClick={(e) => this.addInput(e, category)}
+			                                            >Add Item</button>
+		                                            </h3>
+		                                            { this.state.category &&
+		                                                <form className="addInput" onSubmit={this.handleSubmit}>
+		                                                    <label htmlFor="pl-contribution">
+		                                                        <input 
+		                                                        	type="text"
+		                                                            onChange={this.handleChange}
+		                                                            id="pl-contribution" 
+		                                                            name="contribution" 
+		                                                            value={this.state.contribution} />
+		                                                    </label>
+		                                                    <input 
+		                                                        type="submit"
+		                                                        value="Submit"
+		                                                    />
+		                                                </form>     
+		                                             }
+		                                             <div className="suggestions">
+		                                             { category.suggestions.length > 0 &&
+		                                                <h4>What we need:</h4>
+		                                             }
+		                                                <ul>
+		                                                    {category.suggestions.map( (suggestion, index) => {
+		                                                    	if( suggestion.claimed ){
+		                                                    		return null;
+		                                                    	} else {
+		                                                    		return (
+		                                                					<li key={`suggestion-${index}`}>
+		                                                					    {suggestion.name}
+		                                                					    <button onClick={() => this.claimSuggestion( suggestion)}>Got it!</button>
+		                                                					</li> 
+		                                                    		    )
+		                                                    	}
+		                                                    } )}
+		                                                </ul>
+		                                                </div>
+		                                                <div className="contributions">
+			                                                { category.contributions.length > 0 &&
+			                                                   <h4 >What we have:</h4>
+			                                                }
+			                                                <ul>
+			                                                	{category.contributions.map( (contribution, index) => {
+			                                                		return (
+			                                                				<li key={`contribution-${index}`}>
+			                                                				    {contribution.name}
+			                                                				    <span>{contribution.user.firstName} {contribution.user.lastName}
+			                                                                    { contribution.user._id === this.props.user._id &&
+			                                                                        <button onClick={() => this.removeContribution(contribution)}>Remove Me</button>
+			                                                                    }
+			                                                                    </span>
+			                                                				</li>
+			                                                			)
+			                                                	} )}
+			                                                </ul>
+		                                                </div>
+		                                            </li>
+		                                            
+		                                        )
+		                                })}
+		                            </ul>
+		                        }
+		                        
+		                    </div>
+		                    <div className="event__attendees">
+		                        <h2>Guest List</h2>
+			                    <ul>
+				                    { event.admins &&
+			                           event.admins.map( (admin, index) => {
+			                               return (
+			                                     <li key={admin._id}><span className="required">{admin.firstName} {admin.lastName}</span></li>     
+			                                   )
+			                           }) 
+				                    }
+				                    { event.guests &&
+			                           event.guests.map( (guest, index) => {
+			                               return (
+			                                     <li key={guest._id}>{guest.firstName} {guest.lastName}</li>     
+			                                   )
+			                           }) 
+				                    }
+			                    </ul>
+		                    </div>
+	                    </div>
                     </div>
                 </main>
+                <Footer/>
             </div>
         );
     }
