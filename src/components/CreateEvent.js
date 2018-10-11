@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Redirect } from "react-router-dom";
 import axios from 'axios';
+import moment from 'moment';
+import DateTime from 'react-datetime';
 
 import Header from './Header';
 import Footer from './Footer';
@@ -26,6 +28,12 @@ class CreateEvent extends Component {
 	handleChange = (e) => {
 		this.setState({
 			[e.target.name]: e.target.value
+		})
+	}
+	setDate = (e) => {
+		console.log(e._d);
+		this.setState({
+			date: e._d
 		})
 	}
 	// Clear input
@@ -125,18 +133,23 @@ class CreateEvent extends Component {
 		e.preventDefault();
 		// Validation, if empty, don't include?
 		const title = this.state.title;
-		const dateString = this.state.date;
-		const timeString = this.state.time;
+		// store datetime in UTC
+		const date = new Date(this.state.date);
 		const address = this.state.address;
 		const image = this.state.image;
 		const description = this.state.description;
 		const categories = this.state.categories;
 		const admin = [this.props.user];
 		const guests = this.state.guests;
+
+		console.log(date);
+		// return;
+
 		axios
 			.post('/event/create', {
 				title: title,
-				date: new Date(dateString + ' ' + timeString),
+				date: date,
+				// time: time,
 				address: address,
 				image: image,
 				description: description,
@@ -190,15 +203,17 @@ class CreateEvent extends Component {
 		        			</label>
 		        		</div>
 		        		<div className="fb-container">
+
 		        			<label className="required" htmlFor="pl-date">
-		        			Date
-		        				<input 
+		        			Date and Time
+		        				<DateTime onChange={this.setDate} inputProps={{ id:'pl-date', name:'date' }}/>
+		        				{/*<input 
 		        					required
 		        				
 		        					onChange={this.handleChange}
 		        					id="pl-date"
 		        					name="date"
-		        					type="date"></input>
+		        					type="date"></input>*/}
 		        			</label>
 		        			<label className="required" htmlFor="pl-time">
 		        			Time

@@ -6,16 +6,28 @@ const ListEvents = ({ events }) => {
         <div>
 	        <ul className="event-list">
 	        {events.map(event => {
+	        	let d = new Date(event.date);
+	        	console.log(d);
+	        	const options = {
+	        		hour12: true,
+	        		weekday: 'short',
+	        		month: 'short',
+	        		day: 'numeric',
+	        		year: 'numeric',
+	        		hour: 'numeric',
+	        		minute: 'numeric'
+	        	}
+	        	const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"]; 
 	        	return (
 	        			<li key={ event._id }>
 		        			<Link className="event-list__list-item"to={`/event/${event._id}`}>
 		        				<div className="list-item__date">
-		        					<span className="date--top bold">15</span>
-		        					<span className="date--bottom">Apr 2018</span>
+		        					<span className="date--top bold">{ d.getDate()}</span>
+		        					<span className="date--bottom">{ months[d.getMonth()]} {d.getFullYear()}</span>
 		        				</div>
 		        				<div className="list-item__text">
 			        				<h4>{event.title}</h4>
-			        				<p className="keyline">{event.date} &#8212; {event.address}</p>
+			        				<p className="keyline">{d.toLocaleDateString('en-US', options)}  &#8212; {event.address}</p>
 			        				<p>{event.description}</p>
 		        				</div>
 		        				<div className="list-item__image">

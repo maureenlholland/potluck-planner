@@ -147,6 +147,17 @@ class SingleEvent extends Component {
      
     render(){
         const event = this.state.event;
+        let d = new Date(event.date);
+        const options = {
+        	hour12: true,
+        	weekday: 'short',
+        	month: 'short',
+        	day: 'numeric',
+        	year: 'numeric',
+        	hour: 'numeric',
+        	minute: 'numeric'
+        }
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"]; 
         return (
             <div className="full-height">
                 <Header setUser={this.props.setUser} />
@@ -157,12 +168,12 @@ class SingleEvent extends Component {
 	                 <div className="wrapper">
 		                 <div className="event-list__list-item">
 	        				<div className="list-item__date">
-	        					<span className="date--top bold">15</span>
-	        					<span className="date--bottom">Apr 2018</span>
+	        					<span className="date--top bold">{ d.getDate()}</span>
+	        					<span className="date--bottom">{months[d.getMonth()]} {d.getFullYear()}</span>
 	        				</div>
 	        				<div className="list-item__text">
 		        				<h2>{event.title}</h2>
-		        				<p className="keyline">{event.date} &#8212; {event.address}</p>
+		        				<p className="keyline">{d.toLocaleDateString('en-US', options)}  &#8212; {event.address}</p>
 		        				<p>{event.description}</p>
 	        				</div>
 		                    <div className="list-item__image">

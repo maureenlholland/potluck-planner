@@ -11,6 +11,7 @@ import CreateEvent from './components/CreateEvent';
 import SingleEvent from './components/SingleEvent';
 import { getToken } from './services/tokenService';
 
+// Add binding
 class App extends Component {
 	state = { 
 		user: null
@@ -21,7 +22,10 @@ class App extends Component {
 	}
 
 	getCurrentUser = () => {
-		const token = getToken();
+		// console.log()
+		// const token = getToken();
+		const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNWJiZTU4ZTdjOTg2MGU5MzM4M2M5M2EyIn0sImlhdCI6MTUzOTI3MDU4N30.bZCqNnVexJW1ssQBY9TWe4M-qotXOwFMJPGyW7uRs_0"
+		// console.log(token);
 		if (token) {
 			axios
 				.get('/user/current', {
