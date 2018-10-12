@@ -18,15 +18,21 @@ import { getToken } from './services/tokenService';
 // })
 
 // Add binding
-class App extends Component {
+@observer class App extends Component {
 	@observable user = null;
 
 	setUser = user => {
-		this.setState({ user });
+
+		this.user = user;
+		if (this.user) {
+			console.log('setUser: there is a user');
+		} else {
+			console.log('setUser: no user')
+		}
 	}
 
 	getCurrentUser = () => {
-		// console.log()
+		
 		// const token = getToken();
 		const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNWJiZTU4ZTdjOTg2MGU5MzM4M2M5M2EyIn0sImlhdCI6MTUzOTI3MDU4N30.bZCqNnVexJW1ssQBY9TWe4M-qotXOwFMJPGyW7uRs_0"
 		// console.log(token);
@@ -38,9 +44,15 @@ class App extends Component {
 					}
 				})
 				.then(res => {
-					const user = res.data.payload;
-					console.log('User ' + user);
-					this.setState({ user });
+					// const user = res.data.payload;
+					// console.log('User ' + user);
+					// this.setState({ user });
+					this.user = res.data.payload
+					if (this.user) {
+						console.log('getCurrentUser: there is a user');
+					} else {
+						console.log('getCurrentUser: no user')
+					}
 				})
 		}
 	}
@@ -61,7 +73,7 @@ class App extends Component {
 						<Route 
 							exact path='/login'
 							render={() => 
-								this.state.user ? 
+								this.user ? 
 								<Redirect to='/'/>
 								:
 								<Login getCurrentUser={this.getCurrentUser}/>
@@ -70,7 +82,7 @@ class App extends Component {
 						<Route
 							exact path = '/signup'
 							render={() =>
-								this.state.user ? 
+								this.user ? 
 								<Redirect to='/'/>
 								:
 								<Signup setUser={this.setUser}/>
@@ -79,11 +91,11 @@ class App extends Component {
 						<Route 
 							exact path='/'
 							render={ (props) => 
-								this.state.user ?
+								this.user ?
 								<Home {...props} 
 									refresh={this.refresh}
 									setUser={this.setUser}
-									user={this.state.user}/>
+									user={this.user}/>
 								:
 								<Redirect to='/login'/>
 							}
@@ -91,10 +103,10 @@ class App extends Component {
 						<Route 
 							path='/create-event'
 							render={ (props) => 
-								this.state.user ?
+								this.user ?
 								<CreateEvent
 									setUser={this.setUser}
-									user={this.state.user}
+									user={this.user}
 								/>
 								:
 								<Redirect to='/login'/>
@@ -103,11 +115,11 @@ class App extends Component {
 						<Route 
 							path='/event/:id'
 							render={ (props) => 
-								this.state.user ?
+								this.user ?
 								<SingleEvent 
 									{...props} 
 									setUser={this.setUser}
-									user={this.state.user}
+									user={this.user}
 								/>
 								:
 								<Redirect to='/login'/>
