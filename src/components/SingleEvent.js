@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import { observable } from "mobx";
+import { observer } from "mobx-react";
 
 import Header from './Header';
 import Footer from './Footer';

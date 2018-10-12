@@ -2,6 +2,8 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
 import axios from 'axios';
+import { observable } from "mobx";
+import { decorate, observer } from "mobx-react";
 
 // Internal Dependencies
 import Home from './components/Home';
@@ -11,11 +13,13 @@ import CreateEvent from './components/CreateEvent';
 import SingleEvent from './components/SingleEvent';
 import { getToken } from './services/tokenService';
 
+// const appState = observable({
+// 	user: null
+// })
+
 // Add binding
 class App extends Component {
-	state = { 
-		user: null
-	}
+	@observable user = null;
 
 	setUser = user => {
 		this.setState({ user });
