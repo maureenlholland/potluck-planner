@@ -1,9 +1,10 @@
 // External Dependencies
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Redirect, Switch, withRouter } from 'react-router-dom';
 import axios from 'axios';
-import { observable } from "mobx";
+import { observable, computed, action, autorun } from "mobx";
 import { decorate, observer } from "mobx-react";
+import DevTools from 'mobx-react-devtools';
 
 // Internal Dependencies
 import Home from './components/Home';
@@ -13,16 +14,14 @@ import CreateEvent from './components/CreateEvent';
 import SingleEvent from './components/SingleEvent';
 import { getToken } from './services/tokenService';
 
-// const appState = observable({
-// 	user: null
-// })
 
 // Add binding
 @observer class App extends Component {
+	@withRouter
 	@observable user = null;
 
-	setUser = user => {
-
+	@action setUser = user => {
+		console.log(this);
 		this.user = user;
 		if (this.user) {
 			console.log('setUser: there is a user');
@@ -31,8 +30,8 @@ import { getToken } from './services/tokenService';
 		}
 	}
 
-	getCurrentUser = () => {
-		
+	@action getCurrentUser = () => {
+		console.log(this);
 		// const token = getToken();
 		const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNWJiZTU4ZTdjOTg2MGU5MzM4M2M5M2EyIn0sImlhdCI6MTUzOTI3MDU4N30.bZCqNnVexJW1ssQBY9TWe4M-qotXOwFMJPGyW7uRs_0"
 		// console.log(token);
@@ -44,9 +43,6 @@ import { getToken } from './services/tokenService';
 					}
 				})
 				.then(res => {
-					// const user = res.data.payload;
-					// console.log('User ' + user);
-					// this.setState({ user });
 					this.user = res.data.payload
 					if (this.user) {
 						console.log('getCurrentUser: there is a user');
@@ -57,18 +53,19 @@ import { getToken } from './services/tokenService';
 		}
 	}
 
-	refresh = () => {
-		this.getCurrentUser();
-	}
+	// refresh = () => {
+	// 	this.getCurrentUser();
+	// }
 
-	componentDidMount() {
-		this.refresh();
-	}
+	// componentDidMount() {
+	// 	this.refresh();
+	// }
 
 	render(){
 		return (
 			<Router>
 				<div>
+					<DevTools/>
 					<Switch>
 						<Route 
 							exact path='/login'
